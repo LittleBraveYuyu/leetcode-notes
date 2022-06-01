@@ -1,0 +1,39 @@
+var findMedianSortedArrays = function(nums1, nums2) {
+    var l1 = nums1.length ;
+    var l2 = nums2.length ;
+    var mid1 = Math.floor((l1 + l2 +1)/2);
+    var mid2 = Math.floor((l1 + l2 +2)/2) ;
+    // 如果出现两个数组总长度为偶数，则需要返回两个中间的数，再除以2，才能得到中位数
+    return (findKth(nums1, 0 , l1-1, nums2, 0, l2-1, mid1) + findKth(nums1, 0, l1-1, nums2, 0, l2-1, mid2))/2 ;
+};
+
+var findKth = function(nums1, begin1, end1, nums2, begin2, end2,  k)//找到第k小的数
+{
+    var len1 = end1 - begin1 + 1 ;
+    var len2 = end2 - begin2 + 1 ;
+    //保证数组1的长度小于数组2的长度，这样如果有数组空了，一定是数组1
+    if(len1 > len2) 
+    {
+        return findKth(nums2, begin2, end2, nums1, begin1, end1, k);
+    }
+    // 如果数组1空了，直接返回数组2中的第k个数
+    if(len1 === 0) return nums2[begin2 + k - 1];
+    // k=1时，直接进行比较
+    if(k === 1) return nums1[begin1] < nums2[begin2] ? nums1[begin1] : nums2[begin2] ;
+
+    // 找数组中第k/2个数或者是得到数组的最后一个数（当数组长度小于k/2时）
+    var k_2 = Math.floor(k / 2);
+    var min1 = len1 < k_2 ? len1 : k_2;
+    var min2 = len2 < k_2 ? len2 : k_2;
+    var i = begin1 + min1 - 1;
+    var j = begin2 + min2 - 1;
+
+    if(nums1[i] > nums2[j])  //舍弃包括第k/2个在内的所有前面的数
+    {
+        return findKth(nums1, begin1, end1, nums2, j+1, end2, k - (j - begin2 +1));
+    }
+    else
+    {
+        return findKth(nums1, i+1 , end1, nums2, begin2, end2, k -(i - begin1 + 1));
+    }
+}
